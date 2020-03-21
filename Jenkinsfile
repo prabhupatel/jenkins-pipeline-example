@@ -1,24 +1,21 @@
 pipeline {
     agent any
-
+    
     stages {
-        stage ('Compile Stage') {
-
+        stage('Build') {
             steps {
-                withMaven(maven : 'maven-3.6.3') {
-                    sh 'mvn clean compile'
+                sh 'mvn -B -DskipTests clean package'
+            }
+        }
+        stage('Test') { 
+            steps {
+                sh 'mvn test' 
+            }
+            post {
+                always {
+                    junit 'target/surefire-reports/*.xml' 
                 }
             }
         }
-
-        stage ('Testing Stage') {
-
-            steps {
-                withMaven(maven : 'maven-3.6.3') {
-                    sh 'mvn test'
-                }
-            }
-        }
-
     }
 }
