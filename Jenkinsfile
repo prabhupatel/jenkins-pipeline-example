@@ -2,22 +2,20 @@ pipeline {
     agent any
 
     stages {
-        stage ('Compile Stage') {
-
-            steps {
-                withMaven(maven : 'maven') {
-                    sh 'mvn clean compile'
+            stage('Build') {
+                steps {
+                    sh 'mvn -B -DskipTests clean package'
                 }
             }
-        }
-
-        stage ('Testing Stage') {
-
-            steps {
-                withMaven(maven : 'maven') {
+            stage('Test') {
+                steps {
                     sh 'mvn test'
                 }
+                post {
+                    always {
+                        junit 'target/surefire-reports/*.xml'
+                    }
+                }
             }
         }
-    }
 }
